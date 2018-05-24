@@ -25,4 +25,37 @@ public class User {
     public User(String uname) {
         username = uname;
     }
+
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+
+    /**
+     * @param id The id to set.
+     * @return User This.
+     */
+    public User setId(Long id) {
+        this.id = id;
+        return this;
+    }
+
+
+    /**
+     * @return the username
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /** @param username The username to set.
+     * @return User This. */
+    public User setUsername(String username) {
+        this.username = username;
+        return this;
+    }
 }

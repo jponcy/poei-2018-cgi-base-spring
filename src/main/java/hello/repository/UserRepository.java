@@ -11,4 +11,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Override
     List<User> findAll();
+
+    /** For search. */
+    User findByUsernameIgnoreCase(String uname);
+
+    /** For login. */
+    User findByUsername(String uname);
 }
