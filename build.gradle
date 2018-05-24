@@ -1,0 +1,89 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.10.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+version = '0.1.0'
+
+repositories {
+    mavenCentral()
+    maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+
+    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-mail:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-web-services:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-data-rest:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
+
+    compileOnly "org.projectlombok:lombok:1.16.20"
+
+    //for dev
+    compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
+
+    // Database
+    compile("org.postgresql:postgresql:9.4.1212.jre7")
+    compile("com.h2database:h2:1.4.196")
+
+    // Simplify getter/setter definitions:
+    compile('org.modelmapper:modelmapper:1.1.0')
+
+    // Test
+    testCompile("junit:junit:4.12")
+    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+    testCompile("org.springframework.security:spring-security-test:4.2.4.RELEASE")
+    testCompile("org.springframework.restdocs:spring-restdocs-mockmvc:1.1.3.RELEASE")
+}
+
+test {
+    ignoreFailures = false
+}
+
+def buildNumber = ""
+
+if (project.file("build.properties").exists()) {
+    def props = new Properties()
+
+    props.load(new FileInputStream(project.file("build.properties")))
+    buildNumber = ".${props.buildNumber}"
+} else {
+    buildNumber = ".0"
+}
+
+jar {
+    baseName = project.name
+    version =  project.version + buildNumber
+}
+
+task archive(type: Zip) {
+    group = 'Archive'
+    description = 'Create a zip with all binaries'
+
+    baseName project.name
+    classifier 'bin'
+    version project.version + buildNumber
+
+    from "$buildDir/libs"
+    include '*'
+
+    destinationDir(file("$buildDir/output/"))
+}

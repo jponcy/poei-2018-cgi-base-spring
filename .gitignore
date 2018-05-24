@@ -1,0 +1,6 @@
+..gitignore.swp
+.classpath
+.gradle/
+.project
+.settings/
+bin/
