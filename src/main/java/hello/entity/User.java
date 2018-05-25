@@ -8,6 +8,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
+
 @Entity
 @Table(name = "sys_user")
 public class User {
@@ -17,7 +20,69 @@ public class User {
     private Long id;
 
     @Column(name = "uname", unique = true, length = 150)
+    @NotBlank
+    @Length(min = 3, max = 14)
     private String username;
+
+    private String firstname;
+    private String lastname;
+
+    @NotBlank
+    private String password;
+
+
+    /**
+     * @return the firstname
+     */
+    public String getFirstname() {
+        return firstname;
+    }
+
+
+    /**
+     * @param firstname The firstname to set.
+     * @return User This.
+     */
+    public User setFirstname(String firstname) {
+        this.firstname = firstname;
+        return this;
+    }
+
+
+    /**
+     * @return the lastname
+     */
+    public String getLastname() {
+        return lastname;
+    }
+
+
+    /**
+     * @param lastname The lastname to set.
+     * @return User This.
+     */
+    public User setLastname(String lastname) {
+        this.lastname = lastname;
+        return this;
+    }
+
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+
+    /**
+     * @param password The password to set.
+     * @return User This.
+     */
+    public User setPassword(String password) {
+        this.password = password;
+        return this;
+    }
 
     public User() {
     }

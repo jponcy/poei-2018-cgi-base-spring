@@ -23,8 +23,13 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        this.userRepository.save(Arrays.asList(new User("isod"), new User("theos"), new User("harkline")));
+        this.userRepository.save(Arrays.asList(this.user("isod"), this.user("theos"), this.user("harkline")));
         this.userRepository.flush();
     }
 
+    private User user(String uname) {
+        User result = new User(uname);
+        result.setPassword(uname + "00");
+        return result;
+    }
 }
