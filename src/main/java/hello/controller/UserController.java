@@ -4,10 +4,13 @@ package hello.controller;
 import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -76,6 +79,35 @@ public class UserController {
         }
 
         return result;
+    }
+
+    @PostMapping("{id:^\\d+$}")
+    public @ResponseBody ResponseEntity<?> updateAction(
+            @PathVariable Long id, @Valid @RequestBody User data, HttpServletResponse response) {
+        ResponseEntity<?> result = null;
+        User user = this.repo.findOne(id);
+
+        if (user == null) {
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+        } else {
+            data.setId(id);
+            this.repo.save(data);
+        }
+
+        return result;
+    }
+
+    @DeleteMapping("{id:^\\d+$}")
+    public void deleteAction(@PathVariable Long id, HttpServletResponse response) {
+        User entity = this.repo.findOne(id);
+
+        if (entity == null) {
+            // throw new NotFoundException();
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+        } else {
+            this.repo.delete(entity);
+            response.setStatus(HttpStatus.NO_CONTENT.value());
+        }
     }
 
     @GetMapping("first")
