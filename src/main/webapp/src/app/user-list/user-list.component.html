@@ -1,0 +1,17 @@
+<table class="table table-hover table-striped">
+  <thead>
+    <tr>
+      <th>Pseudo</th>
+      <th>Nom</th>
+      <th>Prénom</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let user of users">
+      <td>{{user.username}}</td>
+      <td>{{user.lastname}}</td>
+      <td>{{user.firstname}}</td>
+    </tr>
+  </tbody>
+</table>

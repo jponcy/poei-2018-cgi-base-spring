@@ -39,7 +39,7 @@ public class UserController {
     @Autowired
     private Validator validator;
 
-    @GetMapping
+    @GetMapping()
     public List<User> getAllAction() {
         return this.repo.findAll();
         /* With manual DTO (result type -> UserGetDTO):
