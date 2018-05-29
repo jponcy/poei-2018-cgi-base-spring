@@ -11,6 +11,9 @@ import javax.persistence.Table;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 @Entity
 @Table(name = "sys_user")
 public class User {
@@ -29,6 +32,7 @@ public class User {
 
     @NotBlank
     @Length(min = 5, max = 250)
+    @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
 
     /**
