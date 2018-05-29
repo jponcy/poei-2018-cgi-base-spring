@@ -28,8 +28,8 @@ public class User {
     private String lastname;
 
     @NotBlank
+    @Length(min = 5, max = 250)
     private String password;
-
 
     /**
      * @return the firstname

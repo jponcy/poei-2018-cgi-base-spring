@@ -2,10 +2,16 @@
 package hello.controller;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
+import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -29,6 +36,9 @@ public class UserController {
     @Autowired
     private UserRepository repo;
 
+    @Autowired
+    private Validator validator;
+
     @GetMapping
     public List<User> getAllAction() {
         return this.repo.findAll();
@@ -40,8 +50,17 @@ public class UserController {
     }
 
     @GetMapping("{id:^\\d+$}")
-    public User findAction(@PathVariable Long id) {
-        return this.repo.findOne(id);
+    public ResponseEntity<User> findAction(@PathVariable Long id) {
+        User entity = this.repo.findOne(id);
+        ResponseEntity<User> result = null;
+
+        if (entity == null) {
+            result = ResponseEntity.notFound().build();
+        } else {
+            result = ResponseEntity.ok(entity);
+        }
+
+        return result;
     }
 
     /**
@@ -81,17 +100,55 @@ public class UserController {
         return result;
     }
 
-    @PostMapping("{id:^\\d+$}")
+    @PutMapping("{id:^\\d+$}")
     public @ResponseBody ResponseEntity<?> updateAction(
-            @PathVariable Long id, @Valid @RequestBody User data, HttpServletResponse response) {
+            @PathVariable Long id, @RequestBody User data) {
         ResponseEntity<?> result = null;
         User user = this.repo.findOne(id);
 
         if (user == null) {
-            response.setStatus(HttpStatus.NOT_FOUND.value());
+            result = ResponseEntity.notFound().build();
         } else {
-            data.setId(id);
-            this.repo.save(data);
+            if (data.getFirstname() != null) { // Accept "".
+                if ("".equals(data.getFirstname()))
+                    user.setFirstname(null);
+                else
+                    user.setFirstname(data.getFirstname());
+            }
+
+            if (data.getLastname() != null) { // Accept "".
+                user.setLastname(data.getLastname());
+            }
+
+            if (data.getUsername() != null) { // Accept "".
+                user.setUsername(data.getUsername());
+            }
+
+            if (data.getPassword() != null) { // Accept "".
+                user.setPassword(data.getPassword());
+            }
+
+            Set<ConstraintViolation<User>> violations = this.validator.validate(user);
+
+            if (violations == null || violations.isEmpty()) {
+                this.repo.save(user);
+                result = ResponseEntity.ok(user);
+            } else {
+                Map<String, List<String>> errors = new HashMap<>();
+
+                violations.forEach(error -> {
+                    String fieldName = error.getPropertyPath().toString();
+                    String errorMessage = error.getMessage();
+
+                    if (!errors.containsKey(fieldName)) {
+                        errors.put(fieldName, new LinkedList<>());
+                    }
+
+                    errors.get(fieldName).add(errorMessage);
+                });
+
+                result = ResponseEntity.badRequest().body(errors);
+            }
         }
 
         return result;
