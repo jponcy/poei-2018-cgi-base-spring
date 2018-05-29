@@ -42,6 +42,9 @@ public class UserController {
     @GetMapping
     public List<User> getAllAction() {
         return this.repo.findAll();
+        /* With manual DTO (result type -> UserGetDTO):
+         * return this.repo.findAll().stream().map(user -> new UserGetDTO(user)).collect(Collectors.toList());
+         */
     }
 
     @GetMapping("{uname:^[a-zA-Z_]+$}")
